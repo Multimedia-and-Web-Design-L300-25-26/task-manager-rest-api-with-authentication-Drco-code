@@ -19,19 +19,13 @@ export const register = async (request, response) => {
 
     // Validate that all required fields are provided
     if (!name || !email || !password) {
-      return res.status(400).json({
+      return resp.status(400).json({
         success: false,
         message: "Please provide all required fields",
       });
     }
 
-    // // Validate that passwords match
-    // if (password !== passwordConfirm) {
-    //   return res.status(400).json({
-    //     success: false,
-    //     message: "Passwords do not match",
-    //   });
-    // }
+
 
     // Check if email already exists
     const userExists = await User.findOne({
