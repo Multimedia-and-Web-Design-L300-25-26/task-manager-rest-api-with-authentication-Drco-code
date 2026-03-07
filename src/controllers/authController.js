@@ -15,11 +15,11 @@ const generateToken = (userId) => {
 export const register = async (request, response) => {
   try {
     // Get data from request body
-    const { name, email, password } = req.body;
+    const { name, email, password } = request.body;
 
     // Validate that all required fields are provided
     if (!name || !email || !password) {
-      return resp.status(400).json({
+      return response.status(400).json({
         success: false,
         message: "Please provide all required fields",
       });
@@ -33,7 +33,7 @@ export const register = async (request, response) => {
     });
 
     if (userExists) {
-      return res.status(409).json({
+      return response.status(409).json({
         success: false,
         message: "Email already in use",
       });
@@ -55,14 +55,14 @@ export const register = async (request, response) => {
     const userResponse = newUser.toObject();
     delete userResponse.password;
 
-    res.status(201).json({
+    response.status(201).json({
       success: true,
       message: "User registered successfully",
       user: userResponse,
     });
   } catch (error) {
     console.error("Register error:", error);
-    res.status(500).json({
+    response.status(500).json({
       success: false,
       message: "Server error during registration",
     });
@@ -70,14 +70,14 @@ export const register = async (request, response) => {
 };
 
 
-export const login = async (req, res) => {
+export const login = async (request, response) => {
   try {
     // Get email and password from request body
-    const { email, password } = req.body;
+    const { email, password } = request.body;
 
     // Validate input
     if (!email || !password) {
-      return res.status(400).json({
+      return response.status(400).json({
         success: false,
         message: "Please provide email and password",
       });
@@ -91,7 +91,7 @@ export const login = async (req, res) => {
 
     // Check if user exists
     if (!user) {
-      return res.status(401).json({
+      return response.status(401).json({
         success: false,
         message: "Invalid email or password",
       });
@@ -102,7 +102,7 @@ export const login = async (req, res) => {
     const isPasswordValid = await bcrypt.compare(password, user.password);
 
     if (!isPasswordValid) {
-      return res.status(401).json({
+      return response.status(401).json({
         success: false,
         message: "Invalid email or password",
       });
@@ -112,7 +112,7 @@ export const login = async (req, res) => {
     const token = generateToken(user._id);
 
     // Return success response
-    res.status(200).json({
+    response.status(200).json({
       success: true,
       message: "Login successful",
       token,
@@ -124,7 +124,7 @@ export const login = async (req, res) => {
     });
   } catch (error) {
     console.error("Login error:", error);
-    res.status(500).json({
+    response.status(500).json({
       success: false,
       message: "Server error during login",
     });

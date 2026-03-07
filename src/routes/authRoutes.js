@@ -6,12 +6,12 @@ import User from "../models/User.js";
 const router = express.Router();
 
 // POST /api/auth/register
-router.post("/register", async (req, res) => {
+router.post("/register", async (request, response) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, email, password } = request.body;
 
     if (!name || !email || !password) {
-      return res.status(400).json({
+      return response.status(400).json({
         message: "Please provide name, email, and password",
       });
     }
@@ -19,7 +19,7 @@ router.post("/register", async (req, res) => {
     const userExists = await User.findOne({ email: email.toLowerCase() });
 
     if (userExists) {
-      return res.status(400).json({
+      return response.status(400).json({
         message: "Email is already in use",
       });
     }
@@ -36,10 +36,10 @@ router.post("/register", async (req, res) => {
     delete userObject.password;
 
     // return 201 and return user directly
-    res.status(201).json(userObject);
+    response.status(201).json(userObject);
   } catch (error) {
     console.error("Register error:", error);
-    res.status(500).json({
+    response.status(500).json({
       message: "Error registering user",
       error: error.message,
     });
@@ -47,12 +47,12 @@ router.post("/register", async (req, res) => {
 });
 
 // POST /api/auth/login
-router.post("/login", async (req, res) => {
+router.post("/login", async (request, response) => {
   try {
-    const { email, password } = req.body;
+    const { email, password } = request.body;
 
     if (!email || !password) {
-      return res.status(400).json({
+      return response.status(400).json({
         message: "Please provide email and password",
       });
     }
@@ -60,7 +60,7 @@ router.post("/login", async (req, res) => {
     const user = await User.findOne({ email: email.toLowerCase() }).select("+password");
 
     if (!user) {
-      return res.status(401).json({
+      return response.status(401).json({
         message: "Invalid email or password",
       });
     }
@@ -68,7 +68,7 @@ router.post("/login", async (req, res) => {
     const passwordMatch = await bcrypt.compare(password, user.password);
 
     if (!passwordMatch) {
-      return res.status(401).json({
+      return response.status(401).json({
         message: "Invalid email or password",
       });
     }
@@ -79,7 +79,7 @@ router.post("/login", async (req, res) => {
       { expiresIn: "24h" }
     );
 
-    res.status(200).json({
+    response.status(200).json({
       token,
       user: {
         id: user._id,
@@ -89,7 +89,7 @@ router.post("/login", async (req, res) => {
     });
   } catch (error) {
     console.error("Login error:", error);
-    res.status(500).json({
+    response.status(500).json({
       message: "Error logging in",
       error: error.message,
     });
